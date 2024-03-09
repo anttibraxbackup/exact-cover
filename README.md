@@ -54,6 +54,13 @@ equal.
  * [Words](https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/java/fi/iki/asb/xcc/words):
    Sample 4x4 word box solver (in Finnish).
 
+## License
+
+I publish this code into the public domain. Feel free to copy, modify, break
+and fix it as you see fit. You are under no obligation to share your work to
+anyone (although I would of course always be interested to know how my code
+can be improved).
+
 ## Contact
 
 Any questions? E-mail: asb (a) iki.fi
