@@ -2,8 +2,8 @@ package fi.iki.asb.xcc.sudoku;
 
 import static fi.iki.asb.xcc.sudoku.Sudoku.format;
 
-import fi.iki.asb.xcc.DLX;
-import fi.iki.asb.xcc.LinkedDLX;
+import fi.iki.asb.xcc.XCC;
+import fi.iki.asb.xcc.LinkedXCC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class SudokuSolver {
 
 	/**
-	 * Map a generic DLX Solution to a SudokuGrid.
+	 * Map a generic XCC Solution to a SudokuGrid.
 	 */
 	private static class SolutionMapper implements
 			Consumer<List<SudokuCell>> {
@@ -54,12 +54,12 @@ public class SudokuSolver {
 		}
 	}
 
-	private final DLX<SudokuCell> dlx;
+	private final XCC<SudokuCell> xcc;
 
 	private final int size;
 
 	public SudokuSolver(final int size) {
-		this.dlx = new LinkedDLX<>(new SudokuOptionMapper(size));
+		this.xcc = new LinkedXCC<>(new SudokuOptionMapper(size));
 		this.size = size;
 		initializeConstraints();
 	}
@@ -68,7 +68,7 @@ public class SudokuSolver {
 		for (int row = 1; row <= size; row++) {
 			for (int col = 1; col <= size; col++) {
 				for (int number = 1; number <= size; number++) {
-					dlx.addOption(new SudokuCell(number, row, col));
+					xcc.addOption(new SudokuCell(number, row, col));
 				}
 			}
 		}
@@ -98,7 +98,7 @@ public class SudokuSolver {
 		}
 
 		// Load the given numbers into a list, so they can be passed on
-		// to DLX.
+		// to XCC.
 		final List<SudokuCell> givenNumbers = new ArrayList<>();
 		for (int row = 1; row <= size; row++) {
 			for (int col = 1; col <= size; col++) {
@@ -112,6 +112,6 @@ public class SudokuSolver {
 		final Consumer<List<SudokuCell>> solutionMapper =
 				new SolutionMapper(grid, sudokuGridConsumer);
 
-		dlx.search(solutionMapper, givenNumbers, emergencyBrake);
+		xcc.search(solutionMapper, givenNumbers, emergencyBrake);
 	}
 }

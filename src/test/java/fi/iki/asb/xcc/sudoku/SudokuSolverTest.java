@@ -14,7 +14,7 @@ public class SudokuSolverTest {
 	 * We said we support arbitrary size puzzles.
 	 *
 	 * <p>Technically we would be able to support zero size puzzles too.
-	 * There wouldn't be any constraints so the DLX matrix is empty and
+	 * There wouldn't be any constraints so the XCC matrix is empty and
 	 * the recursive search hits the first <code>head.right == head</code>
 	 * test with an empty solution...</p>
 	 */

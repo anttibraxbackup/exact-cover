@@ -1,7 +1,7 @@
 package fi.iki.asb.xcc.pentomino;
 
-import fi.iki.asb.xcc.DLX;
-import fi.iki.asb.xcc.LinkedDLX;
+import fi.iki.asb.xcc.XCC;
+import fi.iki.asb.xcc.LinkedXCC;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -10,7 +10,7 @@ public class PentominoSolver {
 
 	private final int height;
 	private final int width;
-	private final DLX<PentominoPlacement> dlx;
+	private final XCC<PentominoPlacement> xcc;
 	private final Consumer<PentominoGrid> solutionConsumer;
 
 	public PentominoSolver(
@@ -22,14 +22,14 @@ public class PentominoSolver {
 		}
 
 		this.width = width;
-		this.dlx = new LinkedDLX<>(new PentominoMapper());
+		this.xcc = new LinkedXCC<>(new PentominoMapper());
 		this.solutionConsumer = solutionConsumer;
 
 		initializeConstraints();
 	}
 
 	public void solve() {
-		dlx.search(this::acceptSolution);
+		xcc.search(this::acceptSolution);
 	}
 
 	private void initializeConstraints() {
@@ -75,7 +75,7 @@ public class PentominoSolver {
 
 		for (int row = 0; row < maxRow; row++) {
 			for (int col = 0; col < maxCol; col++) {
-				dlx.addOption(new PentominoPlacement(p, row, col));
+				xcc.addOption(new PentominoPlacement(p, row, col));
 			}
 		}
 	}

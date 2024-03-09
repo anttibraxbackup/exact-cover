@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
-public class DLXTest {
+public class XCCTest {
 
 	// From https://en.wikipedia.org/wiki/Knuth%27s_Algorithm_X
 	private static class WikipediaExample implements OptionItemMapper<String> {
@@ -43,21 +43,21 @@ public class DLXTest {
 
 	private final List<String> lastSolution = new ArrayList<>();
 	
-	private DLX<String> createWikipediaExample() {
-		final DLX<String> dlx = new LinkedDLX<>(new WikipediaExample());
-		dlx.addOption("A");
-		dlx.addOption("B");
-		dlx.addOption("C");
-		dlx.addOption("D");
-		dlx.addOption("E");
-		dlx.addOption("F");
-		return dlx;
+	private XCC<String> createWikipediaExample() {
+		final XCC<String> xcc = new LinkedXCC<>(new WikipediaExample());
+		xcc.addOption("A");
+		xcc.addOption("B");
+		xcc.addOption("C");
+		xcc.addOption("D");
+		xcc.addOption("E");
+		xcc.addOption("F");
+		return xcc;
 	}
 
 	@Test
 	public void givenWikipediaExample_shouldFindSolution() {
-		final DLX<String> dlx = createWikipediaExample();
-		dlx.search(this::solutionConsumer);
+		final XCC<String> xcc = createWikipediaExample();
+		xcc.search(this::solutionConsumer);
 
 		assertEquals(3, lastSolution.size());
 		assertEquals("B", lastSolution.get(0));
@@ -67,30 +67,30 @@ public class DLXTest {
 
 	@Test
 	public void givenImpossibleUniverse_shouldNotFindSolution() {
-		final DLX<String> dlx = new LinkedDLX<>(new NoSolution());
-		dlx.addOption("A");
-		dlx.addOption("B");
-		dlx.addOption("C");
-		dlx.search(this::solutionConsumer);
+		final XCC<String> xcc = new LinkedXCC<>(new NoSolution());
+		xcc.addOption("A");
+		xcc.addOption("B");
+		xcc.addOption("C");
+		xcc.search(this::solutionConsumer);
 
 		assertEquals(0, lastSolution.size());
 	}
 
 	@Test
 	public void givenDirtyMatrix_shouldFailImmediately() {
-		final DLX<String> dlx = createWikipediaExample();
+		final XCC<String> xcc = createWikipediaExample();
 
 		// First run with a failing solution consumer to
 		// make the matrix dirty.
 		try {
-			dlx.search(this::failingSolutionConsumer);
+			xcc.search(this::failingSolutionConsumer);
 			fail("Expected a RuntimeException");
 		} catch (RuntimeException ex) {
 			// Ok.
 		}
 
 		try {
-			dlx.search(this::solutionConsumer);
+			xcc.search(this::solutionConsumer);
 			fail("Expected an IllegalStateException");
 		} catch (IllegalStateException ex) {
 			// Ok.

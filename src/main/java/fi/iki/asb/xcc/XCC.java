@@ -15,11 +15,11 @@ import java.util.function.Consumer;
  *     might be a class that represents "placing a number in a given row,
  *     column location".
  */
-public interface DLX<O> {
+public interface XCC<O> {
 
     /**
      * Is the matrix dirty? If a search is interrupted by an exception, the
-     * matrix is left dirty and cannot be reused. The DLX instance must be
+     * matrix is left dirty and cannot be reused. The XCC instance must be
      * recreated.
      */
     boolean isDirty();
@@ -30,7 +30,7 @@ public interface DLX<O> {
      *
      * @throws IllegalStateException
      * 		A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     void addOption(final O option);
@@ -45,7 +45,7 @@ public interface DLX<O> {
      *
      * @throws IllegalStateException
      *      A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     default void search(final Consumer<List<O>> solutionConsumer) {
@@ -68,7 +68,7 @@ public interface DLX<O> {
      *
      * @throws IllegalStateException
      *      A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     default void search(
@@ -94,7 +94,7 @@ public interface DLX<O> {
      *
      * @throws IllegalStateException
      *      A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     default void search(
@@ -126,7 +126,7 @@ public interface DLX<O> {
      *
      * @throws IllegalStateException
      *      A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     void search(

@@ -1,7 +1,8 @@
 package fi.iki.asb.xcc.queen;
 
-import fi.iki.asb.xcc.DLX;
-import fi.iki.asb.xcc.LinkedDLX;
+import fi.iki.asb.xcc.LinkedXCC;
+import fi.iki.asb.xcc.XCC;
+import fi.iki.asb.xcc.queen.option.QueenPlacement;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -15,7 +16,7 @@ public class QueenSolver {
 	
 	private final int size;
 
-	private final DLX<QueenPlacement> dlx;
+	private final XCC<QueenPlacement> xcc;
 
 	private final Consumer<QueenGrid> solutionConsumer;
 
@@ -23,28 +24,35 @@ public class QueenSolver {
 			final int size,
 			final Consumer<QueenGrid> solutionConsumer) {
 		this.size = size;
-		this.dlx = new LinkedDLX<>(new QueenMapper(size));
+		this.xcc = new LinkedXCC<>(new QueenMapper(size));
 		this.solutionConsumer = solutionConsumer;
 
-		initializeConstraints();
+		initializeOptions();
 	}
 
-	private void initializeConstraints() {
+	/**
+	 * Initialize the options. This adds options for placing a queen to
+	 * each square on the chess board.
+	 */
+	private void initializeOptions() {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
-				dlx.addOption(new QueenPlacement(row, col));
+				xcc.addOption(new QueenPlacement(row, col));
 			}
 		}
 	}
 
 	public void solve() {
-		dlx.search(this::acceptSolution);
+		xcc.search(this::acceptSolution);
 	}
 
+	/**
+	 * Accept the solution and convert the queen placements into a
+	 * two-dimensional chess board representation.
+	 */
 	private void acceptSolution(List<QueenPlacement> solution) {
 		final QueenGrid grid = new QueenGrid(size);
 		solution.forEach(pl -> pl.placeOn(grid));
 		solutionConsumer.accept(grid);
 	}
-		
 }

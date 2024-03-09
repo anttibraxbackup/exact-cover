@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  *     might be a class that represents "placing a number in a given row,
  *     column location".
  */
-public final class LinkedDLX<O> implements DLX<O> {
+public final class LinkedXCC<O> implements XCC<O> {
 
     /**
      * A secret color that is used as a marker for items that have been
@@ -154,7 +154,7 @@ public final class LinkedDLX<O> implements DLX<O> {
      *      Mapper that creates the items that are covered by each option that
      *      is added to the matrix.
      */
-    public LinkedDLX(final OptionItemMapper<O> optionItemMapper) {
+    public LinkedXCC(final OptionItemMapper<O> optionItemMapper) {
         this.optionItemMapper = optionItemMapper;
     }
 
@@ -172,7 +172,7 @@ public final class LinkedDLX<O> implements DLX<O> {
      *
      * @throws IllegalStateException
      * 		A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     @Override
@@ -235,7 +235,7 @@ public final class LinkedDLX<O> implements DLX<O> {
     }
 
     // =================================================================== //
-    // The DLX solution.
+    // The XCC solution.
 
     /**
      * Search for exact cover solution with pre-selected options
@@ -260,7 +260,7 @@ public final class LinkedDLX<O> implements DLX<O> {
      *
      * @throws IllegalStateException
      *      A previous <code>search</code> was interrupted by an exception
-     *      and the matrix was left dirty. The DLX instance must be
+     *      and the matrix was left dirty. The XCC instance must be
      *      recreated.
      */
     @Override

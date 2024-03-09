@@ -3,7 +3,7 @@ package fi.iki.asb.xcc;
 import java.util.Collection;
 
 /**
- * Interface for mapping an option in the DLX matrix to items that the option
+ * Interface for mapping an option in the XCC matrix to items that the option
  * covers.
  */
 @FunctionalInterface

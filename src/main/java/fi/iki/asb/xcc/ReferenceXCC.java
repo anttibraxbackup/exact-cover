@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
  *     fasc5c.ps.gz
  * </a>.
  */
-public final class ReferenceDLX<O> implements DLX<O> {
+public final class ReferenceXCC<O> implements XCC<O> {
 
     // TODO: Convert to using arrays instead of Lists. Getting rid of method
-    // calls will likely improve the performance to match LinkedDLX.
+    // calls will likely improve the performance to match LinkedXCC.
 
     /**
      * A secret color that is used as a marker for items that have been
@@ -127,7 +127,7 @@ public final class ReferenceDLX<O> implements DLX<O> {
      *      Mapper that creates the items that are covered by each option
      *      that is added to the matrix.
      */
-    public ReferenceDLX(
+    public ReferenceXCC(
             final OptionItemMapper<O> optionItemMapper) {
         this.optionItemMapper = optionItemMapper;
     }
@@ -265,7 +265,7 @@ public final class ReferenceDLX<O> implements DLX<O> {
     }
 
     // =========================================================== //
-    // The DLX solution.
+    // The XCC solution.
 
     @Override
     public void search(
