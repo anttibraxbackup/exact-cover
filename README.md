@@ -7,10 +7,10 @@ Most XCC solvers you find in the internet are faithful recreations of the
 algorithm described by Donald Knuth in [The Art Of Computer Programming,
 Volume 4B](https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming#Volume_4B_%E2%80%93_Combinatorial_Algorithms,_Part_2) with all the issues that come with "scientific classroom
 code." This implementation tries to provide an implementation that follows
-well established good programming practises, is thoroughly documented and
-as easy to understand as humanly possible, and accepts the fact that it is
-not necessarily always possible or even feasible to represent the universe
-with an integer.
+well established good programming practises, is thoroughly documented,
+as easy to understand as humanly possible with descriptive and human-readable
+variable names, and accepts the fact that it is not necessarily always
+possible (or even feasible) to represent the universe with an integer.
 
 A fairly faithful implementation of the algorithm that uses Knuth's [array
 based matrix](https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/java/fi/iki/asb/xcc/ReferenceXCC.java) is also provided for reference.
