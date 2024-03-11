@@ -45,7 +45,7 @@ covers.
 
 For primary items, the only restriction is that they implement the equals and hashCode
 methods correctly. Secondary items must also implement the [SecondaryItem](
-  https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/solver/java/fi/iki/asb/xcc/SecondaryItem.java) iterface and ensure that a possible color attribute is not included in equals
+https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/solver/java/fi/iki/asb/xcc/SecondaryItem.java) iterface and ensure that a possible color attribute is not included in equals
 and hashCode. I.e. two items that represent the same constraint with different color
 must always be equal.
 
