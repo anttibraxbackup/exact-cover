@@ -25,11 +25,26 @@ extracting the item initialization into s dedicated class: [OptionItemMapper](ht
 The user adds options to the DLX implementation and the DLX implementation
 queries the OptionItemMapper for the relevant items.
 
+### Options
+
+The implementation does not place any restrictions on the objects used to
+represent options. They can be fully fledged Java domain objects that represent
+the action being done when the option is included in the solution or Strings
+or Integers if they are sufficient. The only requirement is that an option
+can be mapped to items consistently.
+
 For example, the sample implementation of the [N queens problem](https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/java/fi/iki/asb/xcc/queen)
 solver defines the option as "placing a queen into a specific location on
 the chess board" (e.g. "queen to d6"). The option item mapper receives the
 option and calculates the row-, column- and diagonals that the placement
 covers.
+
+### Items
+
+For primary items, the only restriction is that they implement the equals and hashCode
+methods correctly. Secondary items must also implement the [SecondaryItem](
+  https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/java/fi/iki/asb/xcc/SecondaryItem.java) iterface and ensure that a possible color attribute is not included in equals
+and hashCode.
 
 ## Secondary Items with Color
 
