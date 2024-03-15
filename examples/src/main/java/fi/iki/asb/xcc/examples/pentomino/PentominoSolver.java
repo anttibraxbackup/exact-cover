@@ -22,7 +22,7 @@ public class PentominoSolver {
 		}
 
 		this.width = width;
-		this.xcc = new LinkedXCC<>(new PentominoMapper());
+		this.xcc = new LinkedXCC<>(new PentominoItemProvider());
 		this.solutionConsumer = solutionConsumer;
 
 		initializeConstraints();

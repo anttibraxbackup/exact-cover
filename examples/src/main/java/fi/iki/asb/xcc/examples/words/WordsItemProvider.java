@@ -1,6 +1,6 @@
 package fi.iki.asb.xcc.examples.words;
 
-import fi.iki.asb.xcc.OptionItemMapper;
+import fi.iki.asb.xcc.ItemProvider;
 import fi.iki.asb.xcc.examples.words.item.CellOccupation;
 import fi.iki.asb.xcc.examples.words.item.ColOccupation;
 import fi.iki.asb.xcc.examples.words.item.RowOccupation;
@@ -11,7 +11,7 @@ import fi.iki.asb.xcc.examples.words.option.WordPlacement;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class WordsOptionItemMapper implements OptionItemMapper<WordPlacement> {
+public class WordsItemProvider implements ItemProvider<WordPlacement> {
 
     @Override
     public Collection<Object> from(WordPlacement option) {

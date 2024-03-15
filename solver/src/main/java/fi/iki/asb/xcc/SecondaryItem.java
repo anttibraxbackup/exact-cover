@@ -6,10 +6,11 @@ package fi.iki.asb.xcc;
  * not have any special features, all items that do not implement this
  * interface are considered primary items.
  *
- * <p>Secondary items that do not have a color can be covered at most once.
- * Secondary items that have color can be covered unlimited times as long as
- * all the instances of the same secondary item in the solution have the same
- * color.</p>
+ * <p>Secondary items that do not have a color can be covered at most once
+ * e.g. null is considered a unique color that does not occur in any other
+ * item (and two nulls are not equal). Secondary items that have color can
+ * be covered unlimited times as long as all the instances of the same
+ * secondary item in the solution have the same color.</p>
  */
 public interface SecondaryItem {
 

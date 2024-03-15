@@ -18,7 +18,7 @@ public class WordsSolver {
     public WordsSolver(int width, int height) {
         this.width = width;
         this.height = height;
-        this.xcc = new LinkedXCC<>(new WordsOptionItemMapper());
+        this.xcc = new LinkedXCC<>(new WordsItemProvider());
         this.solutionConsumer = new WordsSolutionConsumer(width, height);
     }
 

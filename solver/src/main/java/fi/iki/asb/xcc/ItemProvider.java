@@ -3,11 +3,10 @@ package fi.iki.asb.xcc;
 import java.util.Collection;
 
 /**
- * Interface for mapping an option in the XCC matrix to items that the option
- * covers.
+ * Interface providing the items covered by an option.
  */
 @FunctionalInterface
-public interface OptionItemMapper<O> {
+public interface ItemProvider<O> {
 
 	/**
 	 * Get items covered by the option. Objects that are instances of {@link

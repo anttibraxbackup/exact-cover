@@ -24,7 +24,7 @@ public class QueenSolver {
 			final int size,
 			final Consumer<QueenGrid> solutionConsumer) {
 		this.size = size;
-		this.xcc = new LinkedXCC<>(new QueenMapper(size));
+		this.xcc = new LinkedXCC<>(new QueenItemProvider(size));
 		this.solutionConsumer = solutionConsumer;
 
 		initializeOptions();

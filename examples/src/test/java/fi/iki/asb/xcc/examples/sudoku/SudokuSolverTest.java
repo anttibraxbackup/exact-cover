@@ -25,7 +25,7 @@ public class SudokuSolverTest {
 		solver.solve(grid, this::solutionCounter);
 
 		assertEquals(1, solutionCount);
-		assertEquals(1, lastSolution.getNumber(1, 1));
+		assertEquals(1, lastSolution.getNumber(0, 0));
 	}
 
 	@Test
@@ -37,14 +37,25 @@ public class SudokuSolverTest {
 		assertEquals(288, solutionCount);
 	}
 
+	// @Test
+	public void findsSolutionTo49x49Sudoku() {
+		// TODO This should find a solution, but it doesn't.
+		solutionCount = 0;
+		SudokuSolver solver = new SudokuSolver(49);
+		solver.solve(this::solutionCounter, this::stopAfterFirstResult);
+
+		System.out.println(lastSolution);
+		assertEquals(1, solutionCount);
+	}
+
 	@Test
 	public void givenSize4Sudoku_whenGivenNumbersExist_findsTheSolution() {
 		SudokuSolver solver = new SudokuSolver(4);
 		SudokuGrid grid = new SudokuGrid(4);
-		grid.setGiven(1, 1, 1);
-		grid.setGiven(4, 1, 3);
-		grid.setGiven(1, 4, 2);
-		grid.setGiven(2, 4, 4);
+		grid.setGiven(1, 0, 0);
+		grid.setGiven(4, 0, 2);
+		grid.setGiven(1, 3, 1);
+		grid.setGiven(2, 3, 3);
 
 		// +-----+-----+
 		// | 1 2 | 4 3 |
@@ -56,18 +67,18 @@ public class SudokuSolverTest {
 
 		solver.solve(grid, this::solutionCounter);
 		assertEquals(1, solutionCount);
+		assertEquals(2, lastSolution.getNumber(0, 1));
+		assertEquals(3, lastSolution.getNumber(0, 3));
+		assertEquals(3, lastSolution.getNumber(1, 0));
+		assertEquals(4, lastSolution.getNumber(1, 1));
 		assertEquals(2, lastSolution.getNumber(1, 2));
-		assertEquals(3, lastSolution.getNumber(1, 4));
+		assertEquals(1, lastSolution.getNumber(1, 3));
+		assertEquals(2, lastSolution.getNumber(2, 0));
 		assertEquals(3, lastSolution.getNumber(2, 1));
-		assertEquals(4, lastSolution.getNumber(2, 2));
-		assertEquals(2, lastSolution.getNumber(2, 3));
-		assertEquals(1, lastSolution.getNumber(2, 4));
-		assertEquals(2, lastSolution.getNumber(3, 1));
+		assertEquals(1, lastSolution.getNumber(2, 2));
+		assertEquals(4, lastSolution.getNumber(2, 3));
+		assertEquals(4, lastSolution.getNumber(3, 0));
 		assertEquals(3, lastSolution.getNumber(3, 2));
-		assertEquals(1, lastSolution.getNumber(3, 3));
-		assertEquals(4, lastSolution.getNumber(3, 4));
-		assertEquals(4, lastSolution.getNumber(4, 1));
-		assertEquals(3, lastSolution.getNumber(4, 3));
 	}
 
 	/**
@@ -90,10 +101,10 @@ public class SudokuSolverTest {
 
 		solver.solve(grid, this::solutionCounter, this::stopAfterFirstResult);
 		assertEquals(1, solutionCount);
-		assertEquals(4, lastSolution.getNumber(1, 3));
-		assertEquals(2, lastSolution.getNumber(2, 3));
-		assertEquals(9, lastSolution.getNumber(4, 3));
-		assertEquals(6, lastSolution.getNumber(5, 3));
+		assertEquals(4, lastSolution.getNumber(0, 2));
+		assertEquals(2, lastSolution.getNumber(1, 2));
+		assertEquals(9, lastSolution.getNumber(3, 2));
+		assertEquals(6, lastSolution.getNumber(4, 2));
 	}
 
 	private void solutionCounter(SudokuGrid solution) {

@@ -38,15 +38,6 @@ public class QueenSolverTest {
 		assertEquals(14200, solutions.size());
 	}
 
-	@Test
-	@Ignore("Takes too long")
-	public void givenSize14Board_shouldFindAllSolutions() {
-		QueenSolver solver = new QueenSolver(14, this::solutionCounter);
-		solver.solve();
-
-		assertEquals(365596, solutions.size());
-	}
-
 	private void solutionCounter(QueenGrid grid) {
 		solutions.add(grid.identity());
 	}

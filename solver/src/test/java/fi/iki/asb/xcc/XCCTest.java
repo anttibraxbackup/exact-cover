@@ -14,7 +14,7 @@ import org.junit.Test;
 public class XCCTest {
 
 	// From https://en.wikipedia.org/wiki/Knuth%27s_Algorithm_X
-	private static class WikipediaExample implements OptionItemMapper<String> {
+	private static class WikipediaExample implements ItemProvider<String> {
 		@Override
 		public Collection<Object> from(String rowValue) {
 			return switch (rowValue) {
@@ -29,7 +29,7 @@ public class XCCTest {
 		}
 	}
 
-	private static class NoSolution implements OptionItemMapper<String> {
+	private static class NoSolution implements ItemProvider<String> {
 		@Override
 		public Collection<Object> from(String rowValue) {
 			return switch (rowValue) {

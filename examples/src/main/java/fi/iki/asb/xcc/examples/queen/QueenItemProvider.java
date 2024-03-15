@@ -1,6 +1,6 @@
 package fi.iki.asb.xcc.examples.queen;
 
-import fi.iki.asb.xcc.OptionItemMapper;
+import fi.iki.asb.xcc.ItemProvider;
 import fi.iki.asb.xcc.examples.queen.item.ColumnOccupation;
 import fi.iki.asb.xcc.examples.queen.item.DiagonalOccupation;
 import fi.iki.asb.xcc.examples.queen.item.ReverseDiagonalOccupation;
@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class QueenMapper implements OptionItemMapper<QueenPlacement> {
+public class QueenItemProvider implements ItemProvider<QueenPlacement> {
 
 	private final int size;
 
-	public QueenMapper(int size) {
+	public QueenItemProvider(int size) {
 		this.size = size;
 	}
 

@@ -1,6 +1,6 @@
 package fi.iki.asb.xcc.examples.pentomino;
 
-import fi.iki.asb.xcc.OptionItemMapper;
+import fi.iki.asb.xcc.ItemProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * Map Pentomino placement constraints.
  */
-public class PentominoMapper
-implements OptionItemMapper<PentominoPlacement> {
+public class PentominoItemProvider
+implements ItemProvider<PentominoPlacement> {
 
 	/**
 	 * Item that marks a specific shape as used so that each shape

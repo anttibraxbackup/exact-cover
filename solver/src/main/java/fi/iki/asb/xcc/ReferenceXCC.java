@@ -92,7 +92,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
     /**
      * Mapper that creates items for options.
      */
-    private final OptionItemMapper<O> optionItemMapper;
+    private final ItemProvider<O> itemProvider;
 
     /**
      * Number of options. The value is negative. The actual number of options
@@ -123,13 +123,13 @@ public final class ReferenceXCC<O> implements XCC<O> {
     private BooleanSupplier emergencyBrake;
 
     /**
-     * @param optionItemMapper
+     * @param itemProvider
      *      Mapper that creates the items that are covered by each option
      *      that is added to the matrix.
      */
     public ReferenceXCC(
-            final OptionItemMapper<O> optionItemMapper) {
-        this.optionItemMapper = optionItemMapper;
+            final ItemProvider<O> itemProvider) {
+        this.itemProvider = itemProvider;
     }
 
     @Override
@@ -166,7 +166,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
 
         // Gather items from the options and add them.
         final Set<Object> uniqueItems = options.stream()
-                .map(optionItemMapper::from)
+                .map(itemProvider::from)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
 
@@ -227,7 +227,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
         DLINK.add(null);
 
         for (O option : options) {
-            final Collection<Object> items = optionItemMapper.from(option);
+            final Collection<Object> items = itemProvider.from(option);
 
             int rowStart = TOP.size() - 1;
             for (Object item : items) {
@@ -291,7 +291,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
             // Remove pre-selected options from the matrix.
             List<Object> items = preSelectedOptions
                     .stream()
-                    .map(optionItemMapper::from)
+                    .map(itemProvider::from)
                     .flatMap(Collection::stream)
                     .distinct()
                     .toList();

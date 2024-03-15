@@ -88,7 +88,7 @@ public final class LinkedXCC<O> implements XCC<O> {
     /**
      * Mapper that creates items for options.
      */
-    private final OptionItemMapper<O> optionItemMapper;
+    private final ItemProvider<O> itemProvider;
 
     /**
      * A permanent token that is on the left side of the first primary
@@ -150,12 +150,12 @@ public final class LinkedXCC<O> implements XCC<O> {
     /**
      * Create a new instance.
      *
-     * @param optionItemMapper
+     * @param itemProvider
      *      Mapper that creates the items that are covered by each option that
      *      is added to the matrix.
      */
-    public LinkedXCC(final OptionItemMapper<O> optionItemMapper) {
-        this.optionItemMapper = optionItemMapper;
+    public LinkedXCC(final ItemProvider<O> itemProvider) {
+        this.itemProvider = itemProvider;
     }
 
     @Override
@@ -184,7 +184,7 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         // Get the items covered by this option from the mapper and add
         // each one to the matrix.
-        for (Object item: optionItemMapper.from(option)) {
+        for (Object item: itemProvider.from(option)) {
             final Column<O> column = getOrCreateColumn(item);
             final Node<O> newNode = new Node<>(column, option);
 
@@ -328,10 +328,28 @@ public final class LinkedXCC<O> implements XCC<O> {
         // and the forEach executes zero times.
 
         // Go through each one of the options that are associated to the
-        // covered item, add the option to the solution and recursively
-        // go through the rest of the options that are still available.
+        // covered item, add the option to the solution and recursively go
+        // through the rest of the options that are still available.
         for (Node<O> n = column.down; n != column; n = n.down) {
-            tryOption(n);
+            // This loop should be a sub-method but that would mean that
+            // there were two method calls in the recursion, which consumes
+            // an unnecessary amount of stack space.
+
+            // For each row that has a constraint in this column, add the
+            // row value to the result, cover all columns that are in
+            // conflict with this row constraint and recurse (step C5).
+            for (Node<O> n1 = n.right; n1 != n; n1 = n1.right) {
+                commitItem(n1);
+            }
+
+            solution.add(n.option);
+            recursiveSearch();
+            solution.removeLast();
+
+            // Rollback changes made before recursion.
+            for (Node<O> n1 = n.left; n1 != n; n1 = n1.left) {
+                uncommit(n1);
+            }
         }
 
         // Step C7 (or return to C6 if we are in recursion).
@@ -360,28 +378,6 @@ public final class LinkedXCC<O> implements XCC<O> {
         return fewest;
     }
 
-    /**
-     * Try adding the option associated to <code>node</code> to the solution.
-     * For each row that has a constraint in this column, add the row value
-     * to the result, cover all columns that are in conflict with this row
-     * constraint and recurse.
-     */
-    private void tryOption(Node<O> node) {
-
-        // Step C5.
-        for (Node<O> n = node.right; n != node; n = n.right) {
-            commitItem(n);
-        }
-
-        solution.add(node.option);
-        recursiveSearch();
-        solution.removeLast();
-
-        // Rollback changes made before recursion.
-        for (Node<O> n = node.left; n != node; n = n.left) {
-            uncommit(n);
-        }
-    }
 
     // =================================================================== //
     // Operations for manipulating the matrix during search.
@@ -535,7 +531,7 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         // Gather distinct items that should be hidden.
         return preSelectedOptions.stream()
-                .map(optionItemMapper::from)
+                .map(itemProvider::from)
                 .flatMap(Collection::stream)
                 .distinct()
                 .toList();
