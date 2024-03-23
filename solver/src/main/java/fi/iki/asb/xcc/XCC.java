@@ -3,6 +3,7 @@ package fi.iki.asb.xcc;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 
 /**
  * A generic exact cover with color solver. An implementation of Knuth's
@@ -34,6 +35,11 @@ public interface XCC<O> {
      *      recreated.
      */
     void addOption(final O option);
+
+    /**
+     * Set tracer.
+     */
+    void setTrace(XCCTrace trace);
 
     /**
      * Search for exact cover solution. The default implementation will not

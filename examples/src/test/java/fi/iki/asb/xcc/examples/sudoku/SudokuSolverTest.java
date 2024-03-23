@@ -37,12 +37,15 @@ public class SudokuSolverTest {
 		assertEquals(288, solutionCount);
 	}
 
+	/**
+	 * This takes minutes.
+	 */
 	// @Test
 	public void findsSolutionTo49x49Sudoku() {
 		// TODO This should find a solution, but it doesn't.
-		solutionCount = 0;
 		SudokuSolver solver = new SudokuSolver(49);
-		solver.solve(this::solutionCounter, this::stopAfterFirstResult);
+
+		solver.solve(this::solutionCounter);
 
 		System.out.println(lastSolution);
 		assertEquals(1, solutionCount);
@@ -100,18 +103,19 @@ public class SudokuSolverTest {
 						"    8  79");
 
 		solver.solve(grid, this::solutionCounter, this::stopAfterFirstResult);
+
 		assertEquals(1, solutionCount);
 		assertEquals(4, lastSolution.getNumber(0, 2));
 		assertEquals(2, lastSolution.getNumber(1, 2));
 		assertEquals(9, lastSolution.getNumber(3, 2));
 		assertEquals(6, lastSolution.getNumber(4, 2));
+
+		// System.out.println(lastSolution);
 	}
 
 	private void solutionCounter(SudokuGrid solution) {
 		solutionCount++;
 		lastSolution = solution;
-
-		// print(solution);
 	}
 
 	private boolean stopAfterFirstResult() {

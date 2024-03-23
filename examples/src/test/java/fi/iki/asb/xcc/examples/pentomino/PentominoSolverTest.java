@@ -2,7 +2,6 @@ package fi.iki.asb.xcc.examples.pentomino;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PentominoSolverTest {
@@ -32,7 +31,7 @@ public class PentominoSolverTest {
 	/**
 	 * This takes about 25 seconds.
 	 */
-	// @Test Takes too long.
+	// @Test
 	public void given6x10Puzzle_shouldFindAllSolutions() {
 		PentominoSolver solver = new PentominoSolver(
 				10, this::solutionCounter);

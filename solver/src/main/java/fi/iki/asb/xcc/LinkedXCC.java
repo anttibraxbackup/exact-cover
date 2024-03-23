@@ -1,12 +1,6 @@
 package fi.iki.asb.xcc;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -145,6 +139,8 @@ public final class LinkedXCC<O> implements XCC<O> {
      */
     private BooleanSupplier emergencyBrake;
 
+    private XCCTrace trace = null;
+
     // =================================================================== //
 
     /**
@@ -156,6 +152,11 @@ public final class LinkedXCC<O> implements XCC<O> {
      */
     public LinkedXCC(final ItemProvider<O> itemProvider) {
         this.itemProvider = itemProvider;
+    }
+
+    @Override
+    public void setTrace(XCCTrace trace) {
+        this.trace = trace;
     }
 
     @Override
@@ -277,14 +278,19 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         // Find the distinct set of items that are covered by the
         // pre-selected options and cover them.
-        final List<Object> hiddenItems =
-                collectHiddenItems(preSelectedOptions);
+        final List<Object> hiddenItems = collectHiddenItems(
+                preSelectedOptions);
         hiddenItems.forEach(i -> coverItem(itemColumns.get(i)));
 
-        this.solution = new LinkedList<>(preSelectedOptions);
-        this.solutionConsumer = solutionConsumer;
-        this.emergencyBrake = emergencyBrake;
         try {
+            this.solution = new LinkedList<>(preSelectedOptions);
+            this.solutionConsumer = solutionConsumer;
+            this.emergencyBrake = emergencyBrake;
+
+            if (trace != null) {
+                trace.onSearchStarted();
+            }
+
             recursiveSearch();
         } finally {
             this.solution = null;
@@ -294,15 +300,13 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         // Uncover the initial hidden columns in reverse order to restore
         // the matrix to original state.
-        for (Object item: hiddenItems.reversed()) {
-            uncoverItem(itemColumns.get(item));
-        }
+        hiddenItems.reversed().forEach(i -> uncoverItem(itemColumns.get(i)));
 
         dirty = false;
     }
 
     /**
-     * Entry point for the recursive search.
+     * Entry point for the recursive search (step C2).
      */
     private void recursiveSearch() {
         if (emergencyBrake.getAsBoolean()) {
@@ -319,6 +323,11 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         // Select and cover column (step C3 and C4).
         final Column<O> column = findColumn();
+
+        if (trace != null) {
+            trace.onRecursionEntered(column.size);
+        }
+
         coverItem(column);
 
         // If the column returned above by findColumn() has no nodes, it
@@ -330,7 +339,13 @@ public final class LinkedXCC<O> implements XCC<O> {
         // Go through each one of the options that are associated to the
         // covered item, add the option to the solution and recursively go
         // through the rest of the options that are still available.
+
+        int c = 0;
         for (Node<O> n = column.down; n != column; n = n.down) {
+            if (trace != null) {
+                trace.onItemSelected();
+            }
+
             // This loop should be a sub-method but that would mean that
             // there were two method calls in the recursion, which consumes
             // an unnecessary amount of stack space.
@@ -354,6 +369,10 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         // Step C7 (or return to C6 if we are in recursion).
         uncoverItem(column);
+
+        if (trace != null) {
+            trace.onRecursionEnded();
+        }
     }
 
     /**
@@ -377,7 +396,6 @@ public final class LinkedXCC<O> implements XCC<O> {
 
         return fewest;
     }
-
 
     // =================================================================== //
     // Operations for manipulating the matrix during search.
@@ -437,12 +455,12 @@ public final class LinkedXCC<O> implements XCC<O> {
      * there when the algorithm backtracks.</p>
      */
     private void coverItem(final Column<O> column) {
-        column.left.right = column.right;
-        column.right.left = column.left;
-
         for (Node<O> n = column.down; n != column; n = n.down) {
             hideOption(n);
         }
+
+        column.left.right = column.right;
+        column.right.left = column.left;
     }
 
     /**
@@ -454,7 +472,7 @@ public final class LinkedXCC<O> implements XCC<O> {
      * longer link to it).
      */
     private void hideOption(final Node<O> node) {
-        for (Node<O> n = node.right; n !=  node; n = n.right) {
+        for (Node<O> n = node.right; n != node; n = n.right) {
             if (n.color != PURIFIED) {
                 n.down.up = n.up;
                 n.up.down = n.down;

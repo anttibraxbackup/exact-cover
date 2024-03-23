@@ -99,9 +99,15 @@ public class SudokuGrid {
     }
     
     public String toString() {
-        StringBuilder sb = new StringBuilder(numbers.length);
-        for (int n : numbers) {
-            sb.append(n > 0 ? Integer.toString(n) : " ");
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < size; row++) {
+            for (int column = 0; column < size; column++) {
+                final int n = numbers[indexOf(row, column)];
+                sb.append(n > 0
+                        ? String.format("%02d, ", n)
+                        : "  , ");
+            }
+            sb.append("\n");
         }
 
         return sb.toString();

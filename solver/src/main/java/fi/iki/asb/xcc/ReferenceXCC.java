@@ -1,13 +1,9 @@
 package fi.iki.asb.xcc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -100,25 +96,39 @@ public final class ReferenceXCC<O> implements XCC<O> {
      */
     private int numOptions = 0;
 
-    private boolean dirty = false;
-
     /**
      * Has the data structure been initialized.
      */
     private boolean initialized = false;
 
     /**
-     * Current solution. Cleared when algorithm finishes.
+     * Is the matrix dirty? This is set to <code>true</code> when the
+     * algorithm starts and restored back to <code>false</code> when it
+     * finishes successfully. If the execution is interrupted by an
+     * exception, the flag is left "dirty" and subsequent executions
+     * are prevented.
+     */
+    private boolean dirty = false;
+
+    /**
+     * Current solution. Cleared when algorithm finishes. Although the
+     * solution is only needed during the execution of the search, it
+     * is stored as an instance field to reduce the number of parameters
+     * that need to be stored in stack during the recursive calls.
      */
     private LinkedList<O> solution;
 
     /**
-     * Current solution consumer. Cleared when algorithm finishes.
+     * Current solution consumer. Cleared when algorithm finishes. As with
+     * <code>solution</code> this is stored as an instance field to reduce
+     * the number of parameters in the recursive calls.
      */
     private Consumer<List<O>> solutionConsumer;
 
     /**
-     * Current emergency brake. Cleared when algorithm finishes.
+     * Current emergency brake. Cleared when algorithm finishes. As with
+     * <code>solution</code> this is stored as an instance field to reduce
+     * the number of parameters in the recursive calls.
      */
     private BooleanSupplier emergencyBrake;
 
@@ -137,10 +147,18 @@ public final class ReferenceXCC<O> implements XCC<O> {
         return dirty;
     }
 
+    // =================================================================== //
+    // Matrix initialization operations.
+
     @Override
     public void addOption(O option) {
         ensureOpen();
         OPTION.add(option);
+    }
+
+    @Override
+    public void setTrace(XCCTrace trace) {
+        // TODO
     }
 
     /**
@@ -280,36 +298,31 @@ public final class ReferenceXCC<O> implements XCC<O> {
         ensureClean();
         dirty = true;
 
-        this.solutionConsumer = solutionConsumer;
-        this.emergencyBrake = emergencyBrake;
-
         if (isInitialized()) {
             initMatrix();
         }
 
+        // Find the distinct set of items that are covered by the
+        // pre-selected options and cover them.
+        final List<Object> hiddenItems = collectHiddenItems(
+                preSelectedOptions);
+        hiddenItems.forEach(i -> cover(columnIndex(i)));
+
         try {
-            // Remove pre-selected options from the matrix.
-            List<Object> items = preSelectedOptions
-                    .stream()
-                    .map(itemProvider::from)
-                    .flatMap(Collection::stream)
-                    .distinct()
-                    .toList();
-            for (Object item : items) {
-                cover(columnIndex(item));
-            }
-
             this.solution = new LinkedList<>(preSelectedOptions);
+            this.solutionConsumer = solutionConsumer;
+            this.emergencyBrake = emergencyBrake;
             recursiveSearch();
-
-            for (Object item : items.reversed()) {
-                uncover(columnIndex(item));
-            }
         } finally {
             this.solution = null;
             this.solutionConsumer = null;
             this.emergencyBrake = null;
         }
+
+        // Uncover the initial hidden columns in reverse order to restore
+        // the matrix to original state.
+        hiddenItems.reversed().forEach(i -> uncover(columnIndex(i)));
+
         dirty = false;
     }
 
@@ -321,16 +334,16 @@ public final class ReferenceXCC<O> implements XCC<O> {
             return;
         }
 
+        // If there are no uncovered columns, the matrix is empty
+        // and the list contains a solution (step C8).
         if (RLINK.getFirst() == 0) {
-            // Step C8
-            solutionConsumer.accept(solution);
+            solutionConsumer.accept(Collections.unmodifiableList(
+                    solution));
             return;
         }
 
-        // Step C3
+        // Select and cover column (steps C3 and C4).
         int i = findColumn();
-
-        // Step C4
         cover(i);
         int x1 = DLINK.get(i);
 
@@ -521,6 +534,20 @@ public final class ReferenceXCC<O> implements XCC<O> {
 
     // =========================================================== //
     // Auxiliary methods.
+
+    /**
+     * Collect hidden items from the pre-selected options.
+     */
+    private List<Object> collectHiddenItems(
+            final Collection<O> preSelectedOptions) {
+
+        // Gather distinct items that should be hidden.
+        return preSelectedOptions.stream()
+                .map(itemProvider::from)
+                .flatMap(Collection::stream)
+                .distinct()
+                .toList();
+    }
 
     private int columnIndex(Object item) {
         for (int i = 1; i < NAME.size(); i++) {
