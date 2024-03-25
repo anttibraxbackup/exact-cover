@@ -3,7 +3,6 @@ package fi.iki.asb.xcc;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -32,30 +31,30 @@ public final class ReferenceXCC<O> implements XCC<O> {
     /**
      * Names of items.
      */
-    private final List<Object> NAME = new ArrayList<>();
+    private Object[] NAME;
 
     /**
      * Column header: index is the index of column <code>i</code>, value is
      * the index of column to the left of <code>i</code>.
      */
-    private final List<Integer> LLINK = new ArrayList<>();
+    private int[] LLINK;
 
     /**
      * Column header: index is the index of column <code>i</code>, value is
      * the index of column to the right of <code>i</code>.
      */
-    private final List<Integer> RLINK = new ArrayList<>();
+    private int[] RLINK;
 
     /**
      * Index is the index of item <code>x</code> value is the index of
      * <column>c</column> in which the index is.
      */
-    private final List<Integer> TOP = new ArrayList<>();
+    private int[] TOP;
 
     /**
      * The number of options the item in index <code>x</code> is part of.
      */
-    private final List<Integer> LEN = TOP;
+    private int[] LEN;
 
     /**
      * Row: index is the index of item <code>x</code>, value is the index of
@@ -63,7 +62,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
      * rows, when the value is the index of the item in the beginning of the
      * row.
      */
-    private final List<Integer> ULINK = new ArrayList<>();
+    private int[] ULINK;
 
     /**
      * Row: index is the index of item <code>x</code>, value is the index of
@@ -71,14 +70,14 @@ public final class ReferenceXCC<O> implements XCC<O> {
      * rows, when the value is the index of the item in the end of the row
      * below. Except when the item is the last item when the value is empty.
      */
-    private final List<Integer> DLINK = new ArrayList<>();
+    private int[] DLINK;
 
     /**
      * The color associated to each item. Null corresponds to 0 in the Knuth
      * algorithm, non-null value corresponds to a positive value and PURIFIED
      * corresponds to negative value.
      */
-    private final List<Object> COLOR = new ArrayList<>();
+    private Object[] COLOR;
 
     /**
      * The option associated to each node in the matrix.
@@ -170,6 +169,15 @@ public final class ReferenceXCC<O> implements XCC<O> {
         ensureOpen();
         initialized = true;
 
+        final List<Object> NAME = new ArrayList<>();
+        final List<Integer> LLINK = new ArrayList<>();
+        final List<Integer> RLINK = new ArrayList<>();
+        final List<Integer> TOP = new ArrayList<>();
+        final List<Integer> LEN = TOP;
+        final List<Integer> ULINK = new ArrayList<>();
+        final List<Integer> DLINK = new ArrayList<>();
+        final List<Object> COLOR = new ArrayList<>();
+
         // Gather all items.
         final List<O> options = new ArrayList<>(OPTION);
         OPTION.clear();
@@ -178,11 +186,11 @@ public final class ReferenceXCC<O> implements XCC<O> {
         NAME.add("header");
         LLINK.add(0);
         RLINK.add(0);
-        LEN.add(null);
+        LEN.add(-1);
         COLOR.add(null);
         OPTION.add(null);
-        ULINK.add(null);
-        DLINK.add(null);
+        ULINK.add(-1);
+        DLINK.add(-1);
 
         // Gather items from the options and add them.
         final Set<Object> uniqueItems = options.stream()
@@ -243,8 +251,8 @@ public final class ReferenceXCC<O> implements XCC<O> {
         TOP.add(numOptions--);
         COLOR.add(null);
         OPTION.add(null);
-        ULINK.add(null);
-        DLINK.add(null);
+        ULINK.add(-1);
+        DLINK.add(-1);
 
         for (O option : options) {
             final Collection<Object> items = itemProvider.from(option);
@@ -252,7 +260,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
             int rowStart = TOP.size() - 1;
             for (Object item : items) {
                 // Add item.
-                int column = columnIndex(item);
+                int column = NAME.indexOf(item);
                 int i = TOP.size();
                 TOP.add(column);
 
@@ -280,8 +288,24 @@ public final class ReferenceXCC<O> implements XCC<O> {
             COLOR.add(null);
             OPTION.add(null);
             ULINK.add(rowStart + 1);
-            DLINK.add(null);
+            DLINK.add(-1);
         }
+
+
+        this.NAME = NAME.toArray();
+        this.LLINK = toArray(LLINK);
+        this.RLINK = toArray(RLINK);
+        this.TOP = toArray(TOP);
+        this.LEN = this.TOP;
+        this.ULINK = toArray(ULINK);
+        this.DLINK = toArray(DLINK);
+        this.COLOR = COLOR.toArray();
+    }
+
+    private int[] toArray(List<Integer> list) {
+        return list.stream()
+                .mapToInt(Integer::intValue)
+                .toArray();
     }
 
     // =========================================================== //
@@ -343,7 +367,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
 
         // If there are no uncovered columns, the matrix is empty
         // and the list contains a solution (step C8).
-        if (RLINK.getFirst() == 0) {
+        if (RLINK[0] == 0) {
             solutionConsumer.accept(Collections.unmodifiableList(
                     solution));
             return;
@@ -353,11 +377,11 @@ public final class ReferenceXCC<O> implements XCC<O> {
         int i = findColumn();
 
         if (trace != null) {
-            trace.onRecursionEntered(LEN.get(i));
+            trace.onRecursionEntered(LEN[i]);
         }
 
         cover(i);
-        int x1 = DLINK.get(i);
+        int x1 = DLINK[i];
 
         // Step C5
         while (x1 != i) {
@@ -368,9 +392,9 @@ public final class ReferenceXCC<O> implements XCC<O> {
             }
 
             while (p != x1) {
-                int j = TOP.get(p);
+                int j = TOP[p];
                 if (j <= 0) {
-                    p = ULINK.get(p);
+                    p = ULINK[p];
                 } else {
                     commit(p, j);
                     p = p + 1;
@@ -385,9 +409,9 @@ public final class ReferenceXCC<O> implements XCC<O> {
             // Step C6
             p = x1 - 1;
             while (p != x1) {
-                int j = TOP.get(p);
+                int j = TOP[p];
                 if (j <= 0) {
-                    p = DLINK.get(p);
+                    p = DLINK[p];
                 } else {
                     uncommit(p, j);
                     p = p - 1;
@@ -395,8 +419,8 @@ public final class ReferenceXCC<O> implements XCC<O> {
             }
 
             // Return to C5
-            i = TOP.get(x1);
-            x1 = DLINK.get(x1);
+            i = TOP[x1];
+            x1 = DLINK[x1];
         }
 
         // C7 or return to C6 if we are in recursion.
@@ -414,14 +438,14 @@ public final class ReferenceXCC<O> implements XCC<O> {
      * discovering inconsistencies earlier.
      */
     private int findColumn() {
-        int candidate = RLINK.getFirst();
+        int candidate = RLINK[0];
         int smallest = candidate;
         while (candidate != 0) {
-            if (LEN.get(candidate) < LEN.get(smallest)) {
+            if (LEN[candidate] < LEN[smallest]) {
                 smallest = candidate;
             }
 
-            candidate = RLINK.get(candidate);
+            candidate = RLINK[candidate];
         }
 
         return smallest;
@@ -431,7 +455,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
     // Operations for manipulating the matrix during search.
 
     private void commit(int p, int j) {
-        Object c = COLOR.get(p);
+        Object c = COLOR[p];
         if (c == null) {
             cover(j);
         } else if (c != PURIFIED) {
@@ -440,51 +464,51 @@ public final class ReferenceXCC<O> implements XCC<O> {
     }
 
     private void purify(int p) {
-        Object c = COLOR.get(p);
-        int i = TOP.get(p);
-        int q = DLINK.get(i);
+        Object c = COLOR[p];
+        int i = TOP[p];
+        int q = DLINK[i];
 
         // Save color.
-        COLOR.set(i, c);
+        COLOR[i] = c;
 
         while (q != i) {
-            if (Objects.equals(COLOR.get(q), c)) {
-                COLOR.set(q, PURIFIED);
+            if (Objects.equals(COLOR[q], c)) {
+                COLOR[q] = PURIFIED;
             } else {
                 hide(q);
             }
 
-            q = DLINK.get(q);
+            q = DLINK[q];
         }
     }
 
     private void cover(int i) {
-        int p = DLINK.get(i);
+        int p = DLINK[i];
         while (p != i) {
             hide(p);
-            p = DLINK.get(p);
+            p = DLINK[p];
         }
 
-        final int l = LLINK.get(i);
-        final int r = RLINK.get(i);
-        RLINK.set(l, r);
-        LLINK.set(r, l);
+        final int l = LLINK[i];
+        final int r = RLINK[i];
+        RLINK[l] = r;
+        LLINK[r] = l;
     }
 
     private void hide(int p) {
         int q = p + 1;
         while (q != p) {
-            int x = TOP.get(q);
-            int u = ULINK.get(q);
+            int x = TOP[q];
+            int u = ULINK[q];
 
             if (x <= 0) {
                 q = u;
             } else {
-                if (COLOR.get(q) != PURIFIED) {
-                    int d = DLINK.get(q);
-                    DLINK.set(u, d);
-                    ULINK.set(d, u);
-                    LEN.set(x, LEN.get(x) - 1);
+                if (COLOR[q] != PURIFIED) {
+                    int d = DLINK[q];
+                    DLINK[u] = d;
+                    ULINK[d] = u;
+                    LEN[x]--;
                 }
                 q++;
             }
@@ -493,7 +517,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
     }
 
     private void uncommit(int p, int j) {
-        Object c = COLOR.get(p);
+        Object c = COLOR[p];
         if (c == null) {
             uncover(j);
         } else if (c != PURIFIED) {
@@ -502,33 +526,33 @@ public final class ReferenceXCC<O> implements XCC<O> {
     }
 
     private void unpurify(int p) {
-        int i = TOP.get(p);
-        int q = ULINK.get(i);
-        Object c = COLOR.get(i);
+        int i = TOP[p];
+        int q = ULINK[i];
+        Object c = COLOR[i];
 
         while (q != i) {
-            if (COLOR.get(q) == PURIFIED) {
-                COLOR.set(q, c);
+            if (COLOR[q] == PURIFIED) {
+                COLOR[q] = c;
             } else {
                 unhide(q);
             }
 
-            q = ULINK.get(q);
+            q = ULINK[q];
         }
 
-        COLOR.set(i, null);
+        COLOR[i] = null;
     }
 
     private void uncover(int i) {
-        final int l = LLINK.get(i);
-        final int r = RLINK.get(i);
-        RLINK.set(l, i);
-        LLINK.set(r, i);
+        final int l = LLINK[i];
+        final int r = RLINK[i];
+        RLINK[l] = i;
+        LLINK[r] = i;
 
-        int p = ULINK.get(i);
+        int p = ULINK[i];
         while (p != i) {
             unhide(p);
-            p = ULINK.get(p);
+            p = ULINK[p];
         }
 
     }
@@ -536,17 +560,17 @@ public final class ReferenceXCC<O> implements XCC<O> {
     private void unhide(int p) {
         int q = p - 1;
         while (q != p) {
-            int x = TOP.get(q);
-            int d = DLINK.get(q);
+            int x = TOP[q];
+            int d = DLINK[q];
 
             if (x <= 0) {
                 q = d;
             } else {
-                if (COLOR.get(q) != PURIFIED) {
-                    int u = ULINK.get(q);
-                    DLINK.set(u, q);
-                    ULINK.set(d, q);
-                    LEN.set(x, LEN.get(x) + 1);
+                if (COLOR[q] != PURIFIED) {
+                    int u = ULINK[q];
+                    DLINK[u] = q;
+                    ULINK[d] = q;
+                    LEN[x]++;
                 }
                 q--;
             }
@@ -571,8 +595,8 @@ public final class ReferenceXCC<O> implements XCC<O> {
     }
 
     private int columnIndex(Object item) {
-        for (int i = 1; i < NAME.size(); i++) {
-            if (Objects.equals(item, NAME.get(i))) {
+        for (int i = 1; i < NAME.length; i++) {
+            if (Objects.equals(item, NAME[i])) {
                 return i;
             }
         }
