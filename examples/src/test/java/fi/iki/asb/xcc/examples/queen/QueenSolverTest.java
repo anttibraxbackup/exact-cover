@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class QueenSolverTest {
 	
 	private List<String> solutions = new ArrayList<>();

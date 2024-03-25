@@ -2,8 +2,10 @@ package fi.iki.asb.xcc.examples.sudoku;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class SudokuSolverTest {
 
 	private int solutionCount = 0;

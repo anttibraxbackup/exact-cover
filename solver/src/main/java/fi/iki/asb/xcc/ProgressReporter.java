@@ -10,6 +10,17 @@ import java.util.LinkedList;
  */
 public class ProgressReporter implements XCCTrace {
 
+    public static ProgressReporter systemOut(long reportInterval) {
+        return new ProgressReporter(
+                (i, p) -> System.out.printf("Progress: %d items, %.5f\n", i, p),
+                reportInterval);
+    }
+
+    @FunctionalInterface
+    public interface ProgressConsumer {
+        void consume(long itemCount, double progress);
+    }
+
     /**
      * Progress record for one recursion level.
      */
@@ -57,6 +68,8 @@ public class ProgressReporter implements XCCTrace {
 
     // =================================================================== //
 
+    private final ProgressConsumer progressConsumer;
+
     /**
      * Report progress when every N items have been tried.
      */
@@ -83,7 +96,10 @@ public class ProgressReporter implements XCCTrace {
      * @param reportInterval
      *      Report progress when every N items have been tried.
      */
-    public ProgressReporter(long reportInterval) {
+    public ProgressReporter(
+            final ProgressConsumer progressConsumer,
+            final long reportInterval) {
+        this.progressConsumer = progressConsumer;
         this.reportInterval = reportInterval;
     }
 
@@ -104,14 +120,22 @@ public class ProgressReporter implements XCCTrace {
         progress.nextItem();
 
         if (++itemsTried % reportInterval == 0) {
-            System.out.printf("Progress %dcu %.5f\n",
-                    itemsTried,
-                    progress.currentProgress + (0.5 / progress.itemCountProduct));
+            progressConsumer.consume(itemsTried, getProgress());
         }
     }
 
     @Override
     public void onRecursionEnded() {
         progress = stack.pop();
+    }
+
+    public double getProgress() {
+        return (progress != null)
+                ? progress.currentProgress + (0.5 / progress.itemCountProduct)
+                : Double.NaN;
+    }
+
+    public long getItemsTried() {
+        return itemsTried;
     }
 }

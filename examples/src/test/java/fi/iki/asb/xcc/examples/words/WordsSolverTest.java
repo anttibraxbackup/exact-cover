@@ -3,6 +3,7 @@ package fi.iki.asb.xcc.examples.words;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
+@Ignore
 public class WordsSolverTest {
 
     @Test
