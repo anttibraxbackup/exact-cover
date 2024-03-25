@@ -79,7 +79,12 @@ public final class ReferenceXCC<O> implements XCC<O> {
     /**
      * The option associated to each node in the matrix.
      */
-    private final List<O> OPTION = new ArrayList<>();
+    private Object[] OPTION;
+
+    /**
+     * The options this solver has been initialized with.
+     */
+    private final List<O> initializedOptions = new ArrayList<>();
 
     /**
      * Mapper that creates items for options.
@@ -151,7 +156,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
     @Override
     public void addOption(O option) {
         ensureOpen();
-        OPTION.add(option);
+        initializedOptions.add(option);
     }
 
     @Override
@@ -174,10 +179,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
         final List<Integer> ULINK = new ArrayList<>();
         final List<Integer> DLINK = new ArrayList<>();
         final List<Object> COLOR = new ArrayList<>();
-
-        // Gather all items.
-        final List<O> options = new ArrayList<>(OPTION);
-        OPTION.clear();
+        final List<Object> OPTION = new ArrayList<>();
 
         // Add header elements.
         NAME.add("header");
@@ -190,7 +192,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
         DLINK.add(-1);
 
         // Gather items from the options and add them.
-        final Set<Object> uniqueItems = options.stream()
+        final Set<Object> uniqueItems = initializedOptions.stream()
                 .map(itemProvider::from)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -251,7 +253,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
         ULINK.add(-1);
         DLINK.add(-1);
 
-        for (O option : options) {
+        for (O option : initializedOptions) {
             final Collection<Object> items = itemProvider.from(option);
 
             int rowStart = TOP.size() - 1;
@@ -297,6 +299,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
         this.ULINK = toArray(ULINK);
         this.DLINK = toArray(DLINK);
         this.COLOR = COLOR.toArray();
+        this.OPTION = OPTION.toArray();
     }
 
     private int[] toArray(List<Integer> list) {
@@ -357,6 +360,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
     /**
      * Step C2
      */
+    @SuppressWarnings("unchecked")
     private void recursiveSearch() {
         if (emergencyBrake.getAsBoolean()) {
             return;
@@ -399,7 +403,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
             }
 
             // Return to C2
-            solution.add(OPTION.get(x1));
+            solution.add((O) OPTION[x1]);
             recursiveSearch();
             solution.removeLast();
 
@@ -591,6 +595,11 @@ public final class ReferenceXCC<O> implements XCC<O> {
                 .toList();
     }
 
+    /**
+     * Find the index of the given item. This is used in the beginning
+     * and end of the search to cover and uncover pre-selected items so
+     * the O(N) running time is not so much of a concern.
+     */
     private int columnIndex(Object item) {
         for (int i = 1; i < NAME.length; i++) {
             if (Objects.equals(item, NAME[i])) {
