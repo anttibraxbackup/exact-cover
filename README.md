@@ -21,10 +21,9 @@ The main issue with the common XCC implementation is initialization of the
 data structure. Even a fairly simple XCC problem easily contains thousands
 of items and hundreds of options and loading up the options into the solver
 can be tedious. This implementation attempts to solve the problem by
-extracting the item initialization into s dedicated class: [OptionItemMapper](
-https://gitlab.com/antti.brax/exact-cover/-/blob/main/solver/src/main/java/fi/iki/asb/xcc/OptionItemMapper.java).
+extracting the item initialization into s dedicated class: [ItemProvider](https://gitlab.com/antti.brax/exact-cover/-/blob/main/solver/src/main/java/fi/iki/asb/xcc/ItemProvider.java).
 The user adds options to the DLX implementation and the DLX implementation
-queries the OptionItemMapper for the relevant items.
+queries the ItemProvider for the relevant items.
 
 ### Options
 
@@ -36,10 +35,10 @@ can be mapped to items consistently.
 
 For example, the sample implementation of the [N queens problem](
 https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/queen)
-solver defines the option as "placing a queen into a specific location on
-the chess board" (e.g. "queen to d6"). The option item mapper receives the
-option and calculates the row-, column- and diagonals that the placement
-covers.
+solver defines the option as "[placing a queen](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/queen/option/QueenPlacement.java)
+into a specific location on the chess board" (e.g. "queen to d6"). The option
+item mapper receives the option and calculates the row-, column- and diagonals
+that the placement covers.
 
 ### Items
 
@@ -51,17 +50,13 @@ must always be equal.
 
 ## Show Me the Code
 
- * [XCC.java](https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/java/fi/iki/asb/xcc/XCC.java): 
-   A common interface for all XCC implementations.
- * [LinkedXCC.java](https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/java/fi/iki/asb/xcc/LinkedXCC.java):
-   Implementation that pointers for the doubly linked matrix. 
-   Sample sudoku solver.
- * [Pentomino](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/pentomino):
-   Sample pentomino solver.
- * [N-queens](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/queen):
-   Sample N-queens solver.
- * [Words](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/words):
-   Sample 4x4 word box solver (in Finnish).
+ * [XCC.java](https://gitlab.com/antti.brax/exact-cover/-/blob/main/solver/src/main/java/fi/iki/asb/xcc/XCC.java): A common interface for XCC implementations.
+ * [LinkedXCC.java](https://gitlab.com/antti.brax/exact-cover/-/blob/main/solver/src/main/java/fi/iki/asb/xcc/LinkedXCC.java): Implementation that uses pointers for the doubly linked matrix. 
+ * [ReferenceXCC.java](https://gitlab.com/antti.brax/exact-cover/-/blob/main/solver/src/main/java/fi/iki/asb/xcc/ReferenceXCC.java): Recreation of Knuth's array based solver.
+ * [Sudoku solver](https://gitlab.com/antti.brax/exact-cover/-/tree/main/examples/src/main/java/fi/iki/asb/xcc/examples/sudoku)
+ * [Pentomino solver](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/pentomino)
+ * [N-queens solver](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/queen)
+ * [Word box solver](https://gitlab.com/antti.brax/exact-cover/-/blob/main/examples/src/main/java/fi/iki/asb/xcc/examples/words)
 
 ## License
 
