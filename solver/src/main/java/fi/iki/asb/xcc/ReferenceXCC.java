@@ -17,9 +17,6 @@ import java.util.stream.Collectors;
  */
 public final class ReferenceXCC<O> implements XCC<O> {
 
-    // TODO: Convert to using arrays instead of Lists. Getting rid of method
-    // calls will likely improve the performance to match LinkedXCC.
-
     /**
      * A secret color that is used as a marker for items that have been
      * purified. This is technically not needed, but it removes the need to
