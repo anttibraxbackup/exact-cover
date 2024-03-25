@@ -132,6 +132,8 @@ public final class ReferenceXCC<O> implements XCC<O> {
      */
     private BooleanSupplier emergencyBrake;
 
+    private XCCTrace trace = null;
+
     /**
      * @param itemProvider
      *      Mapper that creates the items that are covered by each option
@@ -158,7 +160,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
 
     @Override
     public void setTrace(XCCTrace trace) {
-        // TODO
+        this.trace = trace;
     }
 
     /**
@@ -312,6 +314,11 @@ public final class ReferenceXCC<O> implements XCC<O> {
             this.solution = new LinkedList<>(preSelectedOptions);
             this.solutionConsumer = solutionConsumer;
             this.emergencyBrake = emergencyBrake;
+
+            if (trace != null) {
+                trace.onSearchStarted();
+            }
+
             recursiveSearch();
         } finally {
             this.solution = null;
@@ -344,12 +351,22 @@ public final class ReferenceXCC<O> implements XCC<O> {
 
         // Select and cover column (steps C3 and C4).
         int i = findColumn();
+
+        if (trace != null) {
+            trace.onRecursionEntered(LEN.get(i));
+        }
+
         cover(i);
         int x1 = DLINK.get(i);
 
         // Step C5
         while (x1 != i) {
             int p = x1 + 1;
+
+            if (trace != null) {
+                trace.onItemSelected();
+            }
+
             while (p != x1) {
                 int j = TOP.get(p);
                 if (j <= 0) {
@@ -384,6 +401,10 @@ public final class ReferenceXCC<O> implements XCC<O> {
 
         // C7 or return to C6 if we are in recursion.
         uncover(i);
+
+        if (trace != null) {
+            trace.onRecursionEnded();
+        }
     }
 
     /**
