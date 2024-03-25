@@ -2,10 +2,8 @@ package fi.iki.asb.xcc.examples.pentomino;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class PentominoSolverTest {
 	
 	private int solutionCount = 0;

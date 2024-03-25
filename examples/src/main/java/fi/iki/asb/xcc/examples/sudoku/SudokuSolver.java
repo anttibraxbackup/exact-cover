@@ -54,6 +54,8 @@ public class SudokuSolver {
         }
     }
 
+    // =================================================================== //
+
     private final XCC<PlaceNumber> xcc;
 
     private final SudokuGrid solution;
@@ -123,22 +125,28 @@ public class SudokuSolver {
                     + givenNumbers.getSize() + "] expected [" + size + "]");
         }
 
-        // Load the given numbers into a list, so they can be passed on
-        // to XCC.
-        final List<PlaceNumber> preSelectedOptions = new ArrayList<>();
+        final Consumer<List<PlaceNumber>> solutionMapper =
+                new SolutionMapper(solution, sudokuGridConsumer);
+        final List<PlaceNumber> preSelectedOptions = getGivenNumbers(givenNumbers);
+        xcc.search(solutionMapper, preSelectedOptions, emergencyBrake);
+    }
+
+    /**
+     * Load the given numbers into a list, so they can be passed on
+     * to XCC.
+     */
+    private List<PlaceNumber> getGivenNumbers(final SudokuGrid grid) {
+        final int size = grid.getSize();
+        final List<PlaceNumber> givenNumbers = new ArrayList<>();
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                int givenNumber = givenNumbers.getNumber(row, col);
+                int givenNumber = grid.getNumber(row, col);
                 if (givenNumber > 0) {
-                    preSelectedOptions.add(
-                            new PlaceNumber(givenNumber, row, col));
+                    givenNumbers.add(new PlaceNumber(givenNumber, row, col));
                 }
             }
         }
 
-        final Consumer<List<PlaceNumber>> solutionMapper =
-                new SolutionMapper(solution, sudokuGridConsumer);
-
-        xcc.search(solutionMapper, preSelectedOptions, emergencyBrake);
+        return givenNumbers;
     }
 }

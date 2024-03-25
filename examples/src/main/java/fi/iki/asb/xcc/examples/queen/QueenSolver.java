@@ -6,14 +6,15 @@ import fi.iki.asb.xcc.examples.queen.option.QueenPlacement;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Solver for the N Queens problem. See the
  * <a href="https://en.wikipedia.org/wiki/Eight_queens_puzzle">
  *     Wikipedia artile</a> about the subject.
  */
-public class QueenSolver {
-	
+public final class QueenSolver {
+
 	private final int size;
 
 	private final XCC<QueenPlacement> xcc;
@@ -22,12 +23,18 @@ public class QueenSolver {
 
 	public QueenSolver(
 			final int size,
-			final Consumer<QueenGrid> solutionConsumer) {
+			final Consumer<QueenGrid> solutionConsumer,
+			final Function<QueenItemProvider, XCC<QueenPlacement>> xccInitializer) {
 		this.size = size;
-		this.xcc = new LinkedXCC<>(new QueenItemProvider(size));
+		this.xcc = xccInitializer.apply(new QueenItemProvider(size));
 		this.solutionConsumer = solutionConsumer;
-
 		initializeOptions();
+	}
+
+	public QueenSolver(
+			final int size,
+			final Consumer<QueenGrid> solutionConsumer) {
+		this(size, solutionConsumer, LinkedXCC::new);
 	}
 
 	/**
