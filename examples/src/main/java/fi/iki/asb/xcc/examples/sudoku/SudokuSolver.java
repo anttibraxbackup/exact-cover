@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A brute force solver for an arbitrary size sudoku puzzle. A brute force
@@ -61,8 +62,12 @@ public class SudokuSolver {
     private final SudokuGrid solution;
 
     public SudokuSolver(int size) {
+        this(size, LinkedXCC::new);
+    }
+
+    public SudokuSolver(int size, final Function<SudokuItemProvider, XCC<PlaceNumber>> xccInitializer) {
         this.solution = new SudokuGrid(size);
-        this.xcc = new LinkedXCC<>(new SudokuItemProvider(size));
+        this.xcc = xccInitializer.apply(new SudokuItemProvider(size));
         initializeConstraints();
     }
 

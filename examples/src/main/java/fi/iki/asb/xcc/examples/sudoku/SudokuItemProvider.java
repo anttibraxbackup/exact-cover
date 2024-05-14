@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class SudokuItemProvider implements ItemProvider<PlaceNumber> {
+public class SudokuItemProvider implements ItemProvider<PlaceNumber> {
 
     /**
      * Square root of size. E.g. the width/height of a box.

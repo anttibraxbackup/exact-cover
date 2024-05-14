@@ -48,6 +48,12 @@ https://gitlab.com/antti.brax/exact-cover/-/blob/main/src/main/solver/java/fi/ik
 and hashCode. I.e. two items that represent the same constraint with different color
 must always be equal.
 
+## Tests
+
+Run performance tests by executing command
+
+    $ mvn jmh:benchmark
+
 ## Show Me the Code
 
  * [XCC.java](https://gitlab.com/antti.brax/exact-cover/-/blob/main/solver/src/main/java/fi/iki/asb/xcc/XCC.java): A common interface for XCC implementations.
