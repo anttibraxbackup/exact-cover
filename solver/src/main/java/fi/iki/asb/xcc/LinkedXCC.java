@@ -340,7 +340,6 @@ public final class LinkedXCC<O> implements XCC<O> {
         // covered item, add the option to the solution and recursively go
         // through the rest of the options that are still available.
 
-        int c = 0;
         for (Node<O> n = column.down; n != column; n = n.down) {
             if (trace != null) {
                 trace.onItemSelected();

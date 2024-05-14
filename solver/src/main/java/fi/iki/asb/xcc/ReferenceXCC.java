@@ -1,6 +1,12 @@
 package fi.iki.asb.xcc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -117,7 +123,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
      * is stored as an instance field to reduce the number of parameters
      * that need to be stored in stack during the recursive calls.
      */
-    private LinkedList<O> solution;
+    private List<O> solution;
 
     /**
      * Current solution consumer. Cleared when algorithm finishes. As with
@@ -335,7 +341,7 @@ public final class ReferenceXCC<O> implements XCC<O> {
         hiddenItems.forEach(i -> cover(columnIndex(i)));
 
         try {
-            this.solution = new LinkedList<>(preSelectedOptions);
+            this.solution = new ArrayList<>(preSelectedOptions);
             this.solutionConsumer = solutionConsumer;
             this.emergencyBrake = emergencyBrake;
 

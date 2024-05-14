@@ -2,9 +2,12 @@ package fi.iki.asb.xcc.examples.pentomino;
 
 import fi.iki.asb.xcc.XCC;
 import fi.iki.asb.xcc.LinkedXCC;
+import fi.iki.asb.xcc.examples.queen.QueenItemProvider;
+import fi.iki.asb.xcc.examples.queen.option.QueenPlacement;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class PentominoSolver {
 
@@ -15,17 +18,24 @@ public class PentominoSolver {
 
 	public PentominoSolver(
 			final int width,
-			final Consumer<PentominoGrid> solutionConsumer) {
+			final Consumer<PentominoGrid> solutionConsumer,
+			final Function<PentominoItemProvider, XCC<PentominoPlacement>> xccInitializer) {
 		height = 60 / width;
 		if (height * width != 60) {
 			throw new IllegalArgumentException("Illegal width [" + width + "]");
 		}
 
 		this.width = width;
-		this.xcc = new LinkedXCC<>(new PentominoItemProvider());
+		this.xcc = xccInitializer.apply(new PentominoItemProvider());
 		this.solutionConsumer = solutionConsumer;
 
 		initializeConstraints();
+	}
+
+	public PentominoSolver(
+			final int width,
+			final Consumer<PentominoGrid> solutionConsumer) {
+		this(width, solutionConsumer, LinkedXCC::new);
 	}
 
 	public void solve() {

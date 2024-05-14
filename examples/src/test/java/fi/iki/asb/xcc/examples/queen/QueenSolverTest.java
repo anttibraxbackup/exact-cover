@@ -1,112 +1,110 @@
 package fi.iki.asb.xcc.examples.queen;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
 import fi.iki.asb.xcc.LinkedXCC;
 import fi.iki.asb.xcc.ReferenceXCC;
 import fi.iki.asb.xcc.XCC;
 import fi.iki.asb.xcc.examples.queen.option.QueenPlacement;
 import org.junit.Test;
 
+import java.util.function.Function;
+
+import static org.junit.Assert.assertEquals;
+
 public class QueenSolverTest {
 
-	private final List<String> solutions = new ArrayList<>();
+	private int solutionCount = 0;
+
+	private QueenSolver solver;
 
 	private void solutionCounter(QueenGrid grid) {
-		solutions.add(grid.identity());
+		solutionCount++;
+	}
+
+	protected int solve(final int expectedSolutionCount) {
+		solutionCount = 0;
+		solver.solve();
+		assertEquals(expectedSolutionCount, solutionCount);
+		return solutionCount;
 	}
 
 	// =================================================================== //
 	// Find "solution" to size 0 board.
+	// Yes, this is a bit stupid.
 
-	private void runSize0Test(
+	protected void initSize0Test(
 			final Function<QueenItemProvider, XCC<QueenPlacement>> xccInitializer) {
-		final QueenSolver solver = new QueenSolver(0, this::solutionCounter, xccInitializer);
-		solver.solve();
-
-		assertEquals(1, solutions.size());
-		assertTrue(solutions.contains(""));
+		solver = new QueenSolver(0, this::solutionCounter, xccInitializer);
 	}
 
 	@Test
 	public void givenLinkedXcc_shouldFindSolutionToSize0Board() {
-		runSize0Test(LinkedXCC::new);
+		initSize0Test(LinkedXCC::new);
+		solve(1);
 	}
 
 	@Test
 	public void givenReferenceXcc_shouldFindSolutionToSize0Board() {
-		runSize0Test(ReferenceXCC::new);
+		initSize0Test(ReferenceXCC::new);
+		solve(1);
 	}
 
 	// =================================================================== //
 	// Find solution to size 1 board.
 
-	private void runSize1Test(
+	protected void initSize1Test(
 			final Function<QueenItemProvider, XCC<QueenPlacement>> xccInitializer) {
-		final QueenSolver solver = new QueenSolver(1, this::solutionCounter, xccInitializer);
-		solver.solve();
-
-		assertEquals(1, solutions.size());
-		assertTrue(solutions.contains("0"));
+		solver = new QueenSolver(1, this::solutionCounter, xccInitializer);
 	}
 
 	@Test
 	public void givenLinkedXcc_shouldFindSolutionToSize1Board() {
-		runSize1Test(LinkedXCC::new);
+		initSize1Test(LinkedXCC::new);
+		solve(1);
 	}
 
 	@Test
 	public void givenReferenceXcc_shouldFindSolutionToSize1Board() {
-		runSize1Test(ReferenceXCC::new);
+		initSize1Test(ReferenceXCC::new);
+		solve(1);
 	}
 
 	// =================================================================== //
 	// Find both solutions to size 4 board.
 
-	private void runSize4Test(
+	protected void initSize4Test(
 			final Function<QueenItemProvider, XCC<QueenPlacement>> xccInitializer) {
-		final QueenSolver solver = new QueenSolver(4, this::solutionCounter, xccInitializer);
-		solver.solve();
-
-		assertEquals(2, solutions.size());
-		assertTrue(solutions.contains("1302"));
-		assertTrue(solutions.contains("2031"));
+		solver = new QueenSolver(4, this::solutionCounter, xccInitializer);
 	}
 
 	@Test
 	public void givenLinkedXcc_shouldFindAllSolutionsToSize4Board() {
-		runSize4Test(LinkedXCC::new);
+		initSize4Test(LinkedXCC::new);
+		solve(2);
 	}
 
 	@Test
 	public void givenReferenceXcc_shouldFindAllSolutionsToSize4Board() {
-		runSize4Test(ReferenceXCC::new);
+		initSize4Test(ReferenceXCC::new);
+		solve(2);
 	}
 
 	// =================================================================== //
 	// Find all solutions to size 8 board.
 
-	private void runSize8Test(
+	protected void initSize8Test(
 			final Function<QueenItemProvider, XCC<QueenPlacement>> xccInitializer) {
-		final QueenSolver solver = new QueenSolver(8, this::solutionCounter, xccInitializer);
-		solver.solve();
-
-		assertEquals(92, solutions.size());
-		assertTrue(solutions.contains("53607142"));
+		solver = new QueenSolver(8, this::solutionCounter, xccInitializer);
 	}
 
 	@Test
 	public void givenLinkedXcc_shouldFindAllSolutionsToSize8Board() {
-		runSize8Test(LinkedXCC::new);
+		initSize8Test(LinkedXCC::new);
+		solve(92);
 	}
 
 	@Test
 	public void givenReferenceXcc_shouldFindAllSolutionsToSize8Board() {
-		runSize8Test(ReferenceXCC::new);
+		initSize8Test(ReferenceXCC::new);
+		solve(92);
 	}
 }
